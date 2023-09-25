@@ -89,6 +89,7 @@ class FireAMPConnector(BaseConnector):
         self._state = None
         self._max_containers = None
         self._max_artifacts = None
+        self._container_count = None
 
         return phantom.APP_SUCCESS
 
@@ -899,10 +900,15 @@ class FireAMPConnector(BaseConnector):
             # TODO: might be able to use local variables instead
             self._max_containers = param.get('container_count', 1)
             self._max_artifacts = param.get('artifact_count', 10)
+            #self._container_count = param.get('container_count', 0)
+            
+            
 
         target_url = f"{self._base_url}/v1/events"
+        event_params = {'limit': param.get('container_count', 0)}
+        self.save_progress(f"[-] Debug event_params: {event_params}")
         while True:
-            ret_val, r_json = self._make_rest_call(target_url, is_absolute_url=True, method="get")
+            ret_val, r_json = self._make_rest_call(target_url,params=event_params, is_absolute_url=True, method="get")
             # self.save_progress(f"[-] Debug resp_json: {resp_json}")
             # r_json = resp_json.json()
             if phantom.is_fail(ret_val):
