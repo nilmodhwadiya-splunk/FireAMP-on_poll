@@ -869,9 +869,8 @@ class FireAMPConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, 'File successfully added')
 
     def handle_page_of_results(self, resp_json:dict):
-    # response = requests.get(url, verify=False)
-    # r_json = response.json()
-    # self.save_progress(f"[-] Debug data_dict ===>>>>> : {response.text}")
+        metadata = resp_json["metadata"]
+        self.save_progress(f"Response metadata: {metadata}")
         for item in resp_json["data"]:
             result = json.dumps(item)
             artifacts = []
@@ -901,14 +900,14 @@ class FireAMPConnector(BaseConnector):
             self._max_containers = param.get('container_count', 1)
             self._max_artifacts = param.get('artifact_count', 10)
             #self._container_count = param.get('container_count', 0)
-            
-            
 
         target_url = f"{self._base_url}/v1/events"
-        event_params = {'limit': param.get('container_count', 0)}
-        self.save_progress(f"[-] Debug event_params: {event_params}")
+        query_params = {'limit': param.get('container_count', 0)}
+        self.save_progress(f"query_params={query_params}")
+
         while True:
-            ret_val, r_json = self._make_rest_call(target_url,params=event_params, is_absolute_url=True, method="get")
+            self.save_progress(f"GET {target_url} with params={query_params}")
+            ret_val, r_json = self._make_rest_call(target_url, params=query_params, is_absolute_url=True, method="get")
             # self.save_progress(f"[-] Debug resp_json: {resp_json}")
             # r_json = resp_json.json()
             if phantom.is_fail(ret_val):
@@ -917,6 +916,10 @@ class FireAMPConnector(BaseConnector):
             optional_error = self.handle_page_of_results(resp_json=r_json)
             if optional_error is not None:
                 return optional_error
+
+            # TODO: remove this after demo
+            # for demo only GET one page
+            break
 
             if "next" not in r_json["metadata"]["links"]:
                 break
