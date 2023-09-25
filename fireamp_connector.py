@@ -896,13 +896,9 @@ class FireAMPConnector(BaseConnector):
         # TODO: fix handling of params including: container_id, start_time, end_time
         #  container_count, artifact_count,
         if self.is_poll_now():
+            # TODO: might be able to use local variables instead
             self._max_containers = param.get('container_count', 1)
             self._max_artifacts = param.get('artifact_count', 10)
-        # make rest call
-        url = 'https://jsonplaceholder.typicode.com/posts'
-        test_url = 'https://xkcd.splunk.link/api/random.json'
-        base_url = 'https://ca6ff3f4-c106-47d4-9f37-2ac9328b573b.mock.pstmn.io/v1/events'
-        endpoint = "/v1/events"
 
         target_url = f"{self._base_url}/v1/events"
         while True:
