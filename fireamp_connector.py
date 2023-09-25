@@ -892,6 +892,9 @@ class FireAMPConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
         # changes
+
+        # TODO: fix handling of params including: container_id, start_time, end_time
+        #  container_count, artifact_count,
         if self.is_poll_now():
             self._max_containers = param.get('container_count', 1)
             self._max_artifacts = param.get('artifact_count', 10)
@@ -986,8 +989,6 @@ class FireAMPConnector(BaseConnector):
             ret_val = self._handle_reverse_lookup(param)
         elif (action == "on_poll"):
             ret_val = self._handle_on_poll(param)
-        elif (action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY):
-            ret_val = self._test_connectivity()
 
 
         return ret_val
